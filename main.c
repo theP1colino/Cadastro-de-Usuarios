@@ -55,18 +55,15 @@ void encryptionFunction2(char texto[], long int chave1, long int chave2){
             }
         }
         chave = (index + (((chave1 + chave2) + i)%strlen(chars))) % strlen(chars);
-        // printf("\n\n%ld\n\n", chave);
         texto[i] = chars[chave];
     }
 }
 
 char *decryptionFunction2(char encryptedText[], long int chave1, long int chave2){
     long int chave;
-    // char decryptedText[50] = "";
     char *decryptedText = (char*) malloc((strlen(encryptedText) + 1));
 
 
-    // printf("%ld, %ld\n", chave1, chave2);
 
     for(int i = 0; i < strlen(encryptedText); i++){
         char caractere;
@@ -86,7 +83,6 @@ char *decryptionFunction2(char encryptedText[], long int chave1, long int chave2
     }
 
     decryptedText[strlen(encryptedText)] = '\0';
-    // printf("%s\n", decryptedText);
     return decryptedText;
 }
 
@@ -128,10 +124,6 @@ void encryption(struct User *usuario){
     secondaryKey = (rand() % 100) + 1;
     sprintf(keyStr, "%ld", secondaryKey);
     strcpy(usuario->key, keyStr);
-    // printf("%ld\n", primaryKey);
-    // printf("%ld\n", secondaryKey);
-    // printf("%s\n", usuario->key);
-    // tercearyKey = strlen(usuario.nome);
    
     encryptionFunction1(usuario->idade, usuario->nome);
     encryptionFunction1(usuario->key, usuario->nome);
@@ -140,13 +132,10 @@ void encryption(struct User *usuario){
     encryptionFunction2(usuario->email, primaryKey, secondaryKey);
     encryptionFunction2(usuario->senha, primaryKey, secondaryKey);
    
-    // encryptionFunction2
-   
 }
 
 void testeCriptografia() {
     char nome[] = "Qualquer coisa";
-    // char chave[] = "12345";
     char *decrypted;
     long int chave1 = 22;
     long int chave2 = 22;
@@ -224,56 +213,6 @@ void listarUsuarios(char arquivo[]){
     }
     fclose(ponteiroArquivo);
 }
-
-// ###################################################################
-// Login de usuario
-/*
-void buscarLogin(struct User usuarios[], int totalUsuarios){
-    char userInput[90] = "", senha[90] = "";
-    int authentication = 0, i = 0, t = 1;
-    do{
-        printf("Digite seu nickname ou seu e-mail: ");
-        fgets(userInput, 89, stdin);
-        fflush(stdin);
-        printf("Agora digite sua senha: ");
-        fgets(senha, 89, stdin);
-        fflush(stdin);
-       
-        for(i; i < totalUsuarios; i++){
-            long int chave1 = 0, chave2 = 0;
-            if((strlen(userInput) == strlen(usuarios[i].nickname) || strlen(userInput) == strlen(usuarios[i].email)) && strlen(senha) == strlen(usuarios[i].senha)){
-                chave1 = decryptionFunction1(usuarios[i].idade, usuarios[i].nome);
-                chave2 = decryptionFunction1(usuarios[i].key, usuarios[i].nome);
-                if(strcmp(userInput, usuarios[i].nickname) == 0 || strcmp(userInput, usuarios[i].email) == 0){
-                if(strcmp(senha, usuarios[i].senha) == 0){
-                    authentication = 1;
-                    i = i;
-                    break;
-                }
-            }
-            }
-        }
-       
-        if(authentication == 1){
-            printf("\n\nBem vindo %s!\n\n", usuarios[i].nome);
-            printf("Informações:\n");
-            printf("Nickname: %s\n", usuarios[i].nickname);
-            printf("Idade: %s\n", usuarios[i].idade);
-            printf("E-mail: %s\n", usuarios[i].email);
-        }
-        else{
-            printf("Usuário ou senha inválidos.\n");
-            if(t <= 5){
-                printf("Tentativas restantes: %d. \n\n", 5 - t);
-            }
-            else{
-                printf("Acesso negado.");
-            }
-        }
-        t = t++;
-    }while(t <= 5);
-}
-*/
 
 void buscarLogin(char arquivo[]){
     char userInput[90] = "", senha[90] = "";
@@ -370,7 +309,7 @@ void buscarLogin(char arquivo[]){
 
 // ###################################################################
 // Funcao de cadastro
-void cadastrarUsuarios(struct User usuarios[], int *totalUsuarios, char arquivo[20]){
+void cadastrarUsuarios(char arquivo[20]){
    
     char input[10];
     char *fimConversao;
@@ -383,8 +322,6 @@ void cadastrarUsuarios(struct User usuarios[], int *totalUsuarios, char arquivo[
         printf("Erro na abertura do arquivo!");
         return;
     }
-   
-    // if(*totalUsuarios < maxUsers){
        
     printf("Digite seu nome: ");
     fgets(newUser.nome, sizeof(newUser.nome), stdin);
@@ -422,14 +359,12 @@ void cadastrarUsuarios(struct User usuarios[], int *totalUsuarios, char arquivo[
     newUser.senha[strcspn(newUser.senha, "\n")] = '\0';
     
     encryption(&newUser);
-    // usuarios[*totalUsuarios] = newUser;
     fprintf(ponteiroArquivo, "%s\n", newUser.nome);
     fprintf(ponteiroArquivo, "%s\n", newUser.nickname);
     fprintf(ponteiroArquivo, "%s\n", newUser.idade);
     fprintf(ponteiroArquivo, "%s\n", newUser.email);
     fprintf(ponteiroArquivo, "%s\n", newUser.senha);
     fprintf(ponteiroArquivo, "%s\n", newUser.key);
-    (*totalUsuarios)++;
 
     fclose(ponteiroArquivo);
     printf("Pressione Enter para continuar...\n");
@@ -449,9 +384,7 @@ int main(int argc, char *argv[]){
     srand(time(NULL));
 
     // Definições:
-    int totalUsuarios = 0;
     int opcao;
-    struct User usuarios[maxUsers];
     char arquivo[] = "banco_de_usuarios.txt";
 
     do{
@@ -467,21 +400,16 @@ int main(int argc, char *argv[]){
         switch(opcao){
             case 1:
                 printf("Cadastrar usuário\n\n");
-                cadastrarUsuarios(usuarios, &totalUsuarios, arquivo);
+                cadastrarUsuarios(arquivo);
                 break;
              
             case 2:
                 buscarLogin(arquivo);
                 break;
                
-            // case 3:
-            //     //system("clear");
-            //     // listarUsuarios(usuarios, totalUsuarios);
-            //     listarUsuarios(arquivo);
-            //     break;
-               
             case 3:
                 printf("Saindo...");
+                break;
             
             case 10:
                 testeCriptografia();
